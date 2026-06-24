@@ -1,28 +1,9 @@
 from astroquery.utils.tap.core import TapPlus
 import pandas as pd
 import numpy as np
-from astroquery.gaia import Gaia
 import matplotlib.pyplot as plt
 
-# Fetch data
-query = """
-SELECT TOP 100000
-    source_id,
-    ra,
-    dec,
-    parallax,
-    phot_g_mean_mag,
-    bp_rp,
-    teff_gspphot,
-    logg_gspphot,
-    mh_gspphot
-FROM gaiadr3.gaia_source
-WHERE parallax_over_error > 20
-"""
-
-job = Gaia.launch_job_async(query)
-stars = job.get_results()
-df = stars.to_pandas()
+df = pd.read_csv("Sample_data.csv")
 
 df["mag"] = df["phot_g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
