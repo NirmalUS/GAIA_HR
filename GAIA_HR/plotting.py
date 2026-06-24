@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("Sample_data.csv")
+df = pd.read_csv("GAIA_HR/Sample_data.csv").head(10000)
 
 df["mag"] = df["phot_g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
