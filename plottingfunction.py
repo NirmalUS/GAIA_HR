@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 from matplotlib.colors import LogNorm
 
-df = pd.read_csv("/home/nirmal/CodeAstro/GAIA_HR/Sample_data_both_table.csv")
-
 plt.style.use(["dark_background"])
 
 def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
@@ -43,5 +41,3 @@ def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
     cbar.set_label(property_name)
 
     plt.show()
-
-plot_hr(df, "lum_flame", log_plot=True)
