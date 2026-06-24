@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
-def plot_hr(df, property_name = "bp_rp", cmap="coolwarm"):
+def plot_hr(df, property_name, label, cmap="coolwarm"):
 
+    fig, ax = plt.subplots(figsize=(8, 10))
 
-    fig, ax = plt.subplots(figsize=())
     scatter = ax.scatter(
         df["bp_rp"],
         df["mag"],
@@ -11,10 +11,20 @@ def plot_hr(df, property_name = "bp_rp", cmap="coolwarm"):
         cmap=cmap,
         s=2
     )
-    ax.set_xlabel = ("bp-rp")
-    ax.set_ylabel = ("mag")
-    ax.set_title = (property_name)
-    plt.colorbar(scatter)
-    plt.show()
+    plt.style.use(["dark_background"])
 
-  
+    ax.invert_yaxis()
+
+    ax.set_xlabel("BP - RP")
+    ax.set_ylabel("Absolute Magnitude")
+
+    ax.set_title(
+        f"HR Diagram Colored by {label}"
+    )
+
+
+    cbar = plt.colorbar(scatter)
+
+    cbar.set_label(label)
+
+    plt.show()
