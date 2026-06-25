@@ -14,7 +14,6 @@ dependencies = [
   "pyvo",
   "pandas"
 ]
-[project]
 authors = [
   {name = "Midhun Goutham Murali", email = "midhungm8101@gmail.com"},
   {name = "Nirmal US", email = "nirmalus24@gmail.com"},
