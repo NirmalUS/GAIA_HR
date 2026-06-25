@@ -1,3 +1,5 @@
+# Working example demonstrating the usage of the package.
+
 from GAIA_HR import query
 from GAIA_HR import plot
 
