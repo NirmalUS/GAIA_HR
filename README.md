@@ -2,7 +2,7 @@
 Library that plots HR diagram from GAIA dataset
 
 [![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
-## MOTIVATION 
+## Motivation
 
 This package queries data and plots Hertzsprung-Russell diagram for a user specified region of the sky (ra, dec, radius) from Gaia data release 3. It also compares  a user specified parameter of different stars in the region using a colormap.
 
