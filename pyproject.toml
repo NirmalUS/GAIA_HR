@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "GAIA_HR"
+version = "1.0.0"
+
+
+dependencies = [
+  "numpy",
+  "matplotlib",
+  "astroquery",
+  "pyvo",
+  "pandas"
+]
+[project]
+authors = [
+  {name = "Midhun Goutham Murali", email = "midhungm8101@gmail.com"},
+  {name = "Nirmal US", email = "nirmalus24@gmail.com"},
+  {name = "Anansh Jain", email = "ananshjain10@gmail.com"},
+]
