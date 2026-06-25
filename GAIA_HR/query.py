@@ -281,3 +281,7 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
 
             df = results.to_pandas()
             return  df
+        
+        # Edge case: No server response
+        else:
+            raise ConnectionError("No servers are responding. Kindly try again later!!")
