@@ -7,30 +7,30 @@ from matplotlib.colors import LogNorm
 plt.style.use(["dark_background"])
 
 def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
-"""
-The plot_hr functions plots the HR diagram , using the data stored in dataframe. The stars are plotted with bp-rp on x axis and absolute magnitude. 
-Additonal properties(tempreature , surface gravity , radial velocity, metalicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
-function supports both linear and logarithmic scaling
-Args:
-        df(pandas.DataFrame):A pandas dataset containing stellar data. 
-                            The data set must contain bp-rp, absolute magnitude
-        property_name(str, optional):
-                        Default: "bp-rp"
-                        Specifies which property of the stellar data will be used for the color map 
-        cmap(str,optional):
-                    Default: "coolwarm"
-                    Specifies the matplotlib colormap used for the stars 
-        log_plot(boolean,optional):
-                     Default: False
-                     To determine whether colorscale to be logarithmic or linear
-                     True :logarithmic color scale 
-                     False : linear color scale
-Return:
-         This function doesnt return anything , instead it shows the H-R diagram using plt.show()
-                     
-"""
-   # Creates a new figure and axes object
-    fig, ax = plt.subplots(figsize=(8, 10)
+    """
+    The plot_hr functions plots the HR diagram , using the data stored in dataframe. The stars are plotted with bp-rp on x axis and absolute magnitude. 
+    Additonal properties(tempreature , surface gravity , radial velocity, metalicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
+    function supports both linear and logarithmic scaling
+    Args:
+            df(pandas.DataFrame):A pandas dataset containing stellar data. 
+                                The data set must contain bp-rp, absolute magnitude
+            property_name(str, optional):
+                            Default: "bp-rp"
+                            Specifies which property of the stellar data will be used for the color map 
+            cmap(str,optional):
+                        Default: "coolwarm"
+                        Specifies the matplotlib colormap used for the stars 
+            log_plot(boolean,optional):
+                        Default: False
+                        To determine whether colorscale to be logarithmic or linear
+                        True :logarithmic color scale 
+                        False : linear color scale
+    Return:
+            This function doesnt return anything , instead it shows the H-R diagram using plt.show()
+                        
+    """
+    # Creates a new figure and axes object
+    fig, ax = plt.subplots(figsize=(8, 10))
 
     #If log_plot is true the scatter plot uses logarithimic normalization                       
     if log_plot:
