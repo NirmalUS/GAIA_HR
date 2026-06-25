@@ -3,30 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-GAIA_HR documentation
-=====================
 
 
+.. _query:
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+GAIA HR , QUERYING DATA
+========================
 
-   query.rst
+Function to query data .
 
-   plot.rst
-
-
-
-
-Indices and tables
-==================
-
-  
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. automodule:: query
+   :members:
 
 
 
