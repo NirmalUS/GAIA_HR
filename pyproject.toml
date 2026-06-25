@@ -13,8 +13,6 @@ dependencies = [
   "astroquery",
   "pyvo",
   "pandas"
-  "os",
-  "sys",
 ]
 [project]
 authors = [
