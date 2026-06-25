@@ -11,8 +11,10 @@ dependencies = [
   "numpy",
   "matplotlib",
   "astroquery",
+  "pyvo",
   "pandas"
-  
+  "os",
+  "sys",
 ]
 [project]
 authors = [
