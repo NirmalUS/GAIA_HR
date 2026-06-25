@@ -29,6 +29,8 @@ def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
             This function doesnt return anything , instead it shows the H-R diagram using plt.show()
                         
     """
+    df["mag"] = df["phot_g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
     # Creates a new figure and axes object
     fig, ax = plt.subplots(figsize=(8, 10))
 

@@ -197,7 +197,7 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
     JOIN gaiadr3.astrophysical_parameters AS ap
     ON gs.source_id = ap.source_id
     WHERE 1 = CONTAINS(
-        POINT("ICRS", ra, dec),
+        POINT("ICRS", gs.ra, gs.dec),
         CIRCLE("ICRS", {ra}, {dec}, {radius})
     )
     AND parallax_over_error > 20
@@ -263,7 +263,7 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             JOIN "I/355/paramp" AS ap
             ON gs.Source = ap.Source
             WHERE 1 = CONTAINS(
-                POINT("ICRS", RA_ICRS, DE_ICRS),
+                POINT("ICRS", gs.RA_ICRS, gs.DE_ICRS),
                 CIRCLE("ICRS", {ra}, {dec}, {radius})
             )
             AND RPlx > 20
