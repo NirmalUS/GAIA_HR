@@ -7,7 +7,7 @@ Library that plots HR diagram from GAIA dataset
 
 This package queries data and plots Hertzsprung-Russell diagram for a user specified region of the sky (ra, dec, radius) from Gaia data release 3 [1]. It also compares  a user specified parameter of different stars in the region using a colormap.
 
-<Figure size 800x1000 with 2 Axes>![Uploading image.png…]()
+![HR-diagram](Gaia_HR-example.png)
 
 ## Installation
 
