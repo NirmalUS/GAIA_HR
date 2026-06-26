@@ -31,8 +31,8 @@ This research has made use of the VizieR catalogue access tool, CDS, Strasbourg,
 
 ## References:
 
-1. Gaia Data Release 2 - Observational Hertzsprung-Russell diagrams. Gaia Collaboration, C.  Babusiaux, et al. A&A 616 A10 (2018). DOI: 10.1051/0004-6361/201832843
+1. Gaia Data Release 2 - Observational Hertzsprung-Russell diagrams. Gaia Collaboration, C.  Babusiaux, et al. A&A 616 A10 (2018). DOI: [10.1051/0004-6361/201832843](https://doi.org/10.1051/0004-6361/201832843)
 
-2. The Gaia mission. Gaia Collaboration, T.  Prusti, et al. A&A 595 A1 (2016). DOI: 10.1051/0004-6361/201629272
+2. The Gaia mission. Gaia Collaboration, T.  Prusti, et al. A&A 595 A1 (2016). DOI: [10.1051/0004-6361/201629272](https://doi.org/10.1051/0004-6361/201629272)
 
-3. Gaia Data Release 3 - Summary of the content and survey properties. Gaia Collaboration, A.  Vallenari, et al. A&A 674 A1 (2023). DOI: 10.1051/0004-6361/202243940
+3. Gaia Data Release 3 - Summary of the content and survey properties. Gaia Collaboration, A.  Vallenari, et al. A&A 674 A1 (2023). DOI: [10.1051/0004-6361/202243940](https://doi.org/10.1051/0004-6361/202243940)
