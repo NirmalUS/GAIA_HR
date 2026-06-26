@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+GAIA_HR/__init__.py
+GAIA_HR/plot.py
+GAIA_HR/query.py
+GAIA_HR.egg-info/PKG-INFO
+GAIA_HR.egg-info/SOURCES.txt
+GAIA_HR.egg-info/dependency_links.txt
+GAIA_HR.egg-info/requires.txt
+GAIA_HR.egg-info/top_level.txt
+test/test_GAIA_HR.py

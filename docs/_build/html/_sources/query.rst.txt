@@ -13,7 +13,7 @@ GAIA HR , QUERYING DATA
 
 Function to query data .
 
-.. automodule:: query
+.. automodule:: GAIA_HR.query
    :members:
 
 
