@@ -186,8 +186,8 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
     
     Executes ADQL query to retrive sources with parallax_over_error > 20 from user specified region.
     Joins standard astrometric data with evaluated astrophysical parameters for available sources.
-    Function utilises a fallback mechanism, attempting to connect t multiple servers until successful
-    connectiona nd query are made.
+    Function utilises a fallback mechanism, attempting to connect to multiple servers until successful
+    connections and query are made.
 
     Args:
         ra (float): Right Ascension of region you want to query (in degrees)
@@ -206,6 +206,16 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
     Returns:
         pandas.DataFrame: gaia star data
     """
+
+    # Check to verify the entered RA, DEC, radius falls within their defined range.
+    if (ra < 0) or (ra > 360):
+        raise ValueError("The specified value of RA do not exist in the celestial system bar the server issue.")
+    elif (dec < -90) or (dec > 90):
+        raise ValueError("The specified value of DEC do not exist in the celestial system bar the server issue.")
+    elif (radius < 0) or (radius > 180):
+        raise ValueError("The specified value of radius is not Queryable or the ADQL query is not accepting the assigned value.")
+    else:
+        pass
 
     # Query construction from user input
     query = f"""
