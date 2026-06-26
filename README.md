@@ -7,17 +7,19 @@ Library that plots HR diagram from GAIA dataset
 
 This package queries data and plots Hertzsprung-Russell diagram for a user specified region of the sky (ra, dec, radius) from Gaia data release 3 [1]. It also compares  a user specified parameter of different stars in the region using a colormap.
 
+<Figure size 800x1000 with 2 Axes>![Uploading image.png…]()
+
 ## Installation
 
 The package is installable on Python 3.x. To install the package, simply write
 
-`pip install Gaia_HR`
+`pip install Gaia-HR`
 
 Otherwise, clone this repo, and follow the below specified commands
 
 `cd Gaia_HR`
 
-`pip install -e .`
+`python -m pip install -e .`
 
 A list of dependencies is available in requirements.txt
 
