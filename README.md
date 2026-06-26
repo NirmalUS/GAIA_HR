@@ -22,6 +22,7 @@ Otherwise, clone this repo, and follow the below specified commands
 `python -m pip install -e .`
 
 A list of dependencies is available in requirements.txt
+For documentation, visit [ReadtheDocs](https://gaia-hr.readthedocs.io/en/latest/)
 
 ## Additional Information
 
