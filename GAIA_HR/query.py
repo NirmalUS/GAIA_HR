@@ -149,6 +149,37 @@ class ALL_SERVER:
         self.check_aip_server()
 
 
+# Dictionaries to map columns from different servers to rename with a common name.
+
+column_mapping = {'source_id':'sid', 
+                  'ra':'ra', 
+                  'dec':'dec', 
+                  'parallax':'parallax',
+                  'phot_g_mean_mag':'g_mean_mag', 
+                  'bp_rp':'bp_rp', 
+                  'teff_gspphot':'teff',
+                  'logg_gspphot':'logg', 
+                  'mh_gspphot': 'mh',
+                  'pm':'pm', 
+                  'radial_velocity':'rv', 
+                  'lum_flame':'lum_flame',
+                  'radius_flame':'radius_flame', 
+                  'mass_flame':'mass_flame',}
+
+column_mapping_Vizier = {'Source':'sid', 
+                         'RA_ICRS':'ra', 
+                         'DE_ICRS':'dec', 
+                         'Plx':'parallax',
+                         'Gmag':'g_mean_mag', 
+                         'BP-RP':'bp_rp', 
+                         'Teff':'teff',
+                         'logg':'logg', 
+                         '[Fe/H]': 'mh',
+                         'PM':'pm', 
+                         'RV':'rv', 
+                         'Lum-Flame':'lum_flame',
+                         'Rad-Flame':'radius_flame', 
+                         'Mass-Flame':'mass_flame',}
 
 def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
     """Fetches a sample of star data from the Gaia DR3 dataset.
@@ -213,6 +244,9 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             stars = job.get_results()
             df = stars.to_pandas()
             
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+
             return df
 
         # Server 2 : gaia.ari
@@ -225,6 +259,9 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             job = ari_tap.launch_job_async(query)
             stars = job.get_results()
             df = stars.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
             
             return df
         
@@ -237,7 +274,10 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
 
             job = service.search(query, response_format='votable')
             astropy_table = job.to_table()
-            df = astropy_table.to_pandas()
+            df = df = astropy_table.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
 
             return df
 
@@ -277,9 +317,12 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             print("Executing query...")
             job = vizier_tap.launch_job(query)
             results = job.get_results()
-            
 
             df = results.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
+
             return  df
         
         # Edge case: No server response

@@ -9,7 +9,7 @@ plt.style.use(["dark_background"])
 def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
     """
     The plot_hr functions plots the HR diagram , using the data stored in dataframe. The stars are plotted with bp-rp on x axis and absolute magnitude. 
-    Additonal properties(tempreature , surface gravity , radial velocity, metalicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
+    Additonal properties(tempreature , surface gravity , radial velocity, metallicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
     function supports both linear and logarithmic scaling
     Args:
             df(pandas.DataFrame):A pandas dataset containing stellar data. 
@@ -26,10 +26,11 @@ def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
                         True :logarithmic color scale 
                         False : linear color scale
     Return:
-            This function doesnt return anything , instead it shows the H-R diagram using plt.show()
-                        
+            matplotlib.figure.Figure
+            The matplotlib figure object showing the H-R diagram using plt.show()
+
     """
-    df["mag"] = df["phot_g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+    df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
     # Creates a new figure and axes object
     fig, ax = plt.subplots(figsize=(8, 10))
