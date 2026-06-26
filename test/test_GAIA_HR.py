@@ -12,9 +12,15 @@ def test_fetch_gaia_data():
 
 def test_plot_hr():
     """
-    Unit test to evaluate correctness of plot_test() function
+    Unit test to evaluate correctness of plot_hr() function
     """
     pass
+
+def test_plot_radec():
+    """
+    Unit test to evaluate correctness of plot_radec() function
+    """
+    pass    
 
 def end_to_end_test():
     """
