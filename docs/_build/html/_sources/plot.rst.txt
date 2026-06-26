@@ -13,7 +13,7 @@ GAIA H-R Graph plot
 
 Function to plot H-R diagram .
 
-.. automodule:: plot
+.. automodule:: GAIA_HR.plot
    :members:
 
 
