@@ -181,7 +181,7 @@ column_mapping_Vizier = {'Source':'sid',
                          'Rad-Flame':'radius_flame', 
                          'Mass-Flame':'mass_flame',}
 
-def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000, server = None):
+def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000, server = None, save_file = False, filename="gaia_data.csv"):
     """Fetches a sample of star data from the Gaia DR3 dataset.
     
     Executes ADQL query to retrive sources with parallax_over_error > 20 from user specified region.
@@ -205,6 +205,12 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
         server (str, optional):
                             Default: None, Autoselects server
                             Name of server for querying. Available options : "gaia", "ari", "aip", "vizier"
+        save_file (bool, optional):
+                            Default: False
+                            Boolean to save fetched data as csv file
+        filename (str, optional):
+                            Default: "gaia_data.csv"
+                            Filename of saved csv file
 
     
     Returns:
@@ -282,13 +288,17 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
             
             # Rename column names to have a common format
             df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
 
             return df
         
 
     # Server 2 : gaia.ari
     if server is None or server == "ari":
-        if ALL_SERVER().check_ari_server() == 0:
+        if ALL_SERVER().check_ari_server() == 1:
             url = "https://gaia.ari.uni-heidelberg.de/tap"
             ari_tap = TapPlus(url=url)
 
@@ -300,6 +310,10 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
 
             # Rename column names to have a common format
             df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
             
             return df
     
@@ -318,6 +332,10 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
 
             # Rename column names to have a common format
             df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
 
             return df
 
@@ -364,6 +382,10 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
 
             # Rename column names to have a common format
             df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
 
             return  df
     

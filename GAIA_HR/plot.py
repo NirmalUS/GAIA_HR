@@ -11,26 +11,26 @@ def plot_hr(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
     The plot_hr function plots the HR diagram , using the data stored in dataframe. The stars are plotted with bp-rp on x axis and absolute magnitude on y axis. 
     Additonal properties(tempreature , surface gravity , radial velocity, metallicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
     function supports both linear and logarithmic scaling
+    
     Args:
-            df(pandas.DataFrame):A pandas dataset containing stellar data. 
-                                The data set must contain bp-rp, absolute magnitude
-            property_name(str, optional):
-                            Default: "bp-rp"
-                            Specifies which property of the stellar data will be used for the color map 
-            cmap(str,optional):
+        df(pandas.DataFrame):
+                        A pandas dataset containing stellar data. 
+                        The data set must contain bp-rp, absolute magnitude
+        property_name(str, optional):
+                        Default: "bp-rp"
+                        Specifies which property of the stellar data will be used for the color map 
+        cmap(str,optional):
                         Default: "coolwarm"
                         Specifies the matplotlib colormap used for the stars 
-            log_plot(boolean,optional):
+        log_plot(boolean,optional):
                         Default: False
                         To determine whether colorscale to be logarithmic or linear
-                        True :logarithmic color scale 
+                        True : logarithmic color scale 
                         False : linear color scale
     Return:
             matplotlib.figure.Figure
             The matplotlib figure object showing the H-R diagram using plt.show()
-
     """
-    df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
     # Creates a new figure and axes object
     fig, ax = plt.subplots(figsize=(12, 10))
@@ -83,16 +83,18 @@ def plot_radec(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
     The plot_radec function plots a 2D plot of region , using the data stored in dataframe. The stars are plotted with right ascension on x axis and declination on y axis. 
     Additonal properties(tempreature , surface gravity , radial velocity, metallicity,proper motion, mass , radius) of the stars can be compared using colormap.The 
     function supports both linear and logarithmic scaling
+
     Args:
-            df(pandas.DataFrame):A pandas dataset containing stellar data. 
-                                The data set must contain bp-rp, absolute magnitude
-            property_name(str, optional):
-                            Default: "bp-rp"
-                            Specifies which property of the stellar data will be used for the color map 
-            cmap(str,optional):
+        df(pandas.DataFrame):
+                        A pandas dataset containing stellar data. 
+                        The data set must contain bp-rp, absolute magnitude
+        property_name(str, optional):
+                        Default: "bp-rp"
+                        Specifies which property of the stellar data will be used for the color map 
+        cmap(str,optional):
                         Default: "coolwarm"
                         Specifies the matplotlib colormap used for the stars 
-            log_plot(boolean,optional):
+        log_plot(boolean,optional):
                         Default: False
                         To determine whether colorscale to be logarithmic or linear
                         True :logarithmic color scale 
@@ -100,9 +102,7 @@ def plot_radec(df, property_name = "bp_rp", cmap="coolwarm", log_plot=False):
     Return:
             matplotlib.figure.Figure
             The matplotlib figure object showing the H-R diagram using plt.show()
-
     """
-    df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
     # Creates a new figure and axes object
     fig, ax = plt.subplots(figsize=(12, 10))
