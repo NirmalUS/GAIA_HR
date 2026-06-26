@@ -264,8 +264,6 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
     for condition in conditions:
         query += condition
 
-    print(query)
-    return 1
 
     with HiddenPrints():
         # Server 1 : esa.gaia
