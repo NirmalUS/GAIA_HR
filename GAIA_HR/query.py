@@ -181,7 +181,7 @@ column_mapping_Vizier = {'Source':'sid',
                          'Rad-Flame':'radius_flame', 
                          'Mass-Flame':'mass_flame',}
 
-def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
+def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000):
     """Fetches a sample of star data from the Gaia DR3 dataset.
     
     Executes ADQL query to retrive sources with parallax_over_error > 20 from user specified region.
@@ -194,14 +194,15 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
         dec (float): Declination of region you want to query (in degrees)
         radius (float): Radius of region you want to query (in degrees)
         d_max (float, optional): 
-                            Default: -1, No input was given
+                            Default: None
                             Maximum distance to sources (in lightyears)
         d_min (float, optional):
-                            Default: 0
+                            Default: None
                             Minimum diatance to sources (in lightyears)
         max_sources (int, optional):
                             Default: 10000
                             Maximum number of sources to be queried
+
     
     Returns:
         pandas.DataFrame: gaia star data
@@ -216,6 +217,23 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
         raise ValueError("The specified value of radius is not Queryable or the ADQL query is not accepting the assigned value.")
     else:
         pass
+
+    if (max_source < 0):
+        print("Invalid max_source input. Defaulting to 10000")
+        max_source = 10000
+    elif (max_source > 1000000):
+        raise ValueError("Bruh! What is wrong with you? Do you want to crash you pc?")
+
+
+    conditions = ["AND gs.parallax_over_error > 20"]
+
+    if d_max is not None:
+        min_parallax = 3261.56 / d_max
+        conditions.append(f"\n    AND gs.parallax >= {min_parallax}")
+    if d_min is not None:
+        max_parallax = 3261.56 / d_min
+        conditions.append(f"\n    AND gs.parallax <= {max_parallax}")
+
 
     # Query construction from user input
     query = f"""
@@ -241,8 +259,13 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
         POINT("ICRS", gs.ra, gs.dec),
         CIRCLE("ICRS", {ra}, {dec}, {radius})
     )
-    AND parallax_over_error > 20
     """
+
+    for condition in conditions:
+        query += condition
+
+    print(query)
+    return 1
 
     with HiddenPrints():
         # Server 1 : esa.gaia
