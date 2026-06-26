@@ -295,6 +295,9 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
 
             return df
         
+        else:
+            raise ConnectionError("Gaia server is not responding. Kindly try again later or check another server!!")
+    
 
     # Server 2 : gaia.ari
     if server is None or server == "ari":
@@ -316,7 +319,11 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
                 df.to_csv(filename, index=False)
             
             return df
-    
+
+        else:
+            raise ConnectionError("ARI Heidelberg server is not responding. Kindly try again later or check another server!!")
+
+
     # Server 3 : gaia.aip
     if server is None or server == "aip":
         if ALL_SERVER().check_aip_server() == 1:
@@ -338,6 +345,10 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
                 df.to_csv(filename, index=False)
 
             return df
+
+        else:
+            raise ConnectionError("Potsdam AIP server is not responding. Kindly try again later or check another server!!")
+    
 
     # Server 4 : vizier 
     if server is None or server == "vizier":
@@ -388,7 +399,11 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
                 df.to_csv(filename, index=False)
 
             return  df
-    
+
+        else:
+            raise ConnectionError("TAPVizier server is not responding. Kindly try again later or check another server!!")
+
+
     # Edge case: No server response
     else:
         raise ConnectionError("No servers are responding. Kindly try again later!!")
