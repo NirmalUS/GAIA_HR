@@ -181,7 +181,7 @@ column_mapping_Vizier = {'Source':'sid',
                          'Rad-Flame':'radius_flame', 
                          'Mass-Flame':'mass_flame',}
 
-def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000):
+def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000, server = None):
     """Fetches a sample of star data from the Gaia DR3 dataset.
     
     Executes ADQL query to retrive sources with parallax_over_error > 20 from user specified region.
@@ -202,6 +202,9 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
         max_sources (int, optional):
                             Default: 10000
                             Maximum number of sources to be queried
+        server (str, optional):
+                            Default: None, Autoselects server
+                            Name of server for querying. Available options : "gaia", "ari", "aip", "vizier"
 
     
     Returns:
@@ -256,104 +259,113 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
     JOIN gaiadr3.astrophysical_parameters AS ap
     ON gs.source_id = ap.source_id
     WHERE 1 = CONTAINS(
-        POINT("ICRS", gs.ra, gs.dec),
-        CIRCLE("ICRS", {ra}, {dec}, {radius})
-    )
+    POINT('ICRS', gs.ra, gs.dec),
+    CIRCLE('ICRS', {ra}, {dec}, {radius})
+     )
     """
+
+    
 
     for condition in conditions:
         query += condition
 
 
     # Server 1 : esa.gaia
-    if ALL_SERVER().check_gaia_server() == 1:
+    if server is None or server == "gaia":
+        if ALL_SERVER().check_gaia_server() == 1 :
 
-        print("Connecting to main Gaia server")
+            print("Connecting to main Gaia server")
 
-        job = Gaia.launch_job_async(query)
-        stars = job.get_results()
-        df = stars.to_pandas()
+            job = Gaia.launch_job_async(query)
+            stars = job.get_results()
+            df = stars.to_pandas()
+            
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+
+            return df
         
-        # Rename column names to have a common format
-        df = df.rename(columns=column_mapping, errors = 'raise')
-
-        return df
 
     # Server 2 : gaia.ari
-    elif ALL_SERVER().check_ari_server() == 1:
-        url = "https://gaia.ari.uni-heidelberg.de/tap"
-        ari_tap = TapPlus(url=url)
+    if server is None or server == "ari":
+        if ALL_SERVER().check_ari_server() == 0:
+            url = "https://gaia.ari.uni-heidelberg.de/tap"
+            ari_tap = TapPlus(url=url)
 
-        print("Connecting to Heidelberg server")
+            print("Connecting to Heidelberg server")
 
-        job = ari_tap.launch_job_async(query)
-        stars = job.get_results()
-        df = stars.to_pandas()
+            job = ari_tap.launch_job_async(query)
+            stars = job.get_results()
+            df = stars.to_pandas()
 
-        # Rename column names to have a common format
-        df = df.rename(columns=column_mapping, errors = 'raise')
-        
-        return df
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+            
+            return df
     
     # Server 3 : gaia.aip
-    elif ALL_SERVER().check_aip_server() == 1:
-        url = "https://gaia.aip.de/tap"
-        service = pyvo.dal.TAPService(url)
+    if server is None or server == "aip":
+        if ALL_SERVER().check_aip_server() == 1:
+        
+            url = "https://gaia.aip.de/tap"
+            service = pyvo.dal.TAPService(url)
 
-        print("Connecting to Potsdam server")
+            print("Connecting to Potsdam server")
 
-        job = service.search(query, response_format='votable')
-        astropy_table = job.to_table()
-        df = df = astropy_table.to_pandas()
+            job = service.search(query, response_format='votable')
+            astropy_table = job.to_table()
+            df = df = astropy_table.to_pandas()
 
-        # Rename column names to have a common format
-        df = df.rename(columns=column_mapping, errors = 'raise')
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
 
-        return df
+            return df
 
     # Server 4 : vizier 
-    elif ALL_SERVER().check_vizier_server() == 1:
-        query = """
-        SELECT TOP {max_source}
-            gs.Source,
-            gs.RA_ICRS,
-            gs.DE_ICRS,
-            gs.Plx,
-            gs.Gmag,
-            gs."BP-RP",
-            gs.Teff,
-            gs.logg,
-            gs."[Fe/H]",
-            gs.PM,
-            gs.RV,
-            ap."Lum-Flame",
-            ap."Rad-Flame",
-            ap."Mass-Flame"
-        FROM "I/355/gaiadr3" AS gs
-        JOIN "I/355/paramp" AS ap
-        ON gs.Source = ap.Source
-        WHERE 1 = CONTAINS(
-            POINT("ICRS", gs.RA_ICRS, gs.DE_ICRS),
-            CIRCLE("ICRS", {ra}, {dec}, {radius})
-        )
-        AND RPlx > 20
-        """
+    if server is None or server == "vizier":
+        if ALL_SERVER().check_vizier_server() == 1:
         
-        url = "http://tapvizier.u-strasbg.fr/TAPVizieR/tap"
-        print(f"Connecting to {url}...")
-        
-        vizier_tap = TapPlus(url=url)
-        
-        print("Executing query...")
-        job = vizier_tap.launch_job(query)
-        results = job.get_results()
+            query = f"""
+            SELECT TOP {max_source}
+                gs.Source,
+                gs.RA_ICRS,
+                gs.DE_ICRS,
+                gs.Plx,
+                gs.Gmag,
+                gs."BP-RP",
+                gs.Teff,
+                gs.logg,
+                gs."[Fe/H]",
+                gs.PM,
+                gs.RV,
+                ap."Lum-Flame",
+                ap."Rad-Flame",
+                ap."Mass-Flame"
+            FROM "I/355/gaiadr3" AS gs
+            JOIN "I/355/paramp" AS ap
+            ON gs.Source = ap.Source
+            WHERE 1 = CONTAINS(
+                POINT('ICRS', gs.RA_ICRS, gs.DE_ICRS),
+                CIRCLE('ICRS', {ra}, {dec}, {radius})
+            )
+            AND RPlx > 20
+            """
+            
+            url = "http://tapvizier.u-strasbg.fr/TAPVizieR/tap"
+            print(f"Connecting to {url}...")
+            
+            vizier_tap = TapPlus(url=url)
+            
+            print("Executing query...")
+            job = vizier_tap.launch_job(query)
+            results = job.get_results()
 
-        df = results.to_pandas()
+            df = results.to_pandas()
 
-        # Rename column names to have a common format
-        df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
 
-        return  df
+            return  df
     
     # Edge case: No server response
     else:
