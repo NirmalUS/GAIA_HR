@@ -265,97 +265,96 @@ def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10
         query += condition
 
 
-    with HiddenPrints():
-        # Server 1 : esa.gaia
-        if ALL_SERVER().check_gaia_server() == 0:
+    # Server 1 : esa.gaia
+    if ALL_SERVER().check_gaia_server() == 1:
 
-            print("Connecting to main Gaia server")
+        print("Connecting to main Gaia server")
 
-            job = Gaia.launch_job_async(query)
-            stars = job.get_results()
-            df = stars.to_pandas()
-            
-            # Rename column names to have a common format
-            df = df.rename(columns=column_mapping, errors = 'raise')
-
-            return df
-
-        # Server 2 : gaia.ari
-        elif ALL_SERVER().check_ari_server() == 0:
-            url = "https://gaia.ari.uni-heidelberg.de/tap"
-            ari_tap = TapPlus(url=url)
-
-            print("Connecting to Heidelberg server")
-
-            job = ari_tap.launch_job_async(query)
-            stars = job.get_results()
-            df = stars.to_pandas()
-
-            # Rename column names to have a common format
-            df = df.rename(columns=column_mapping, errors = 'raise')
-            
-            return df
+        job = Gaia.launch_job_async(query)
+        stars = job.get_results()
+        df = stars.to_pandas()
         
-        # Server 3 : gaia.aip
-        elif ALL_SERVER().check_aip_server() == 1:
-            url = "https://gaia.aip.de/tap"
-            service = pyvo.dal.TAPService(url)
+        # Rename column names to have a common format
+        df = df.rename(columns=column_mapping, errors = 'raise')
 
-            print("Connecting to Potsdam server")
+        return df
 
-            job = service.search(query, response_format='votable')
-            astropy_table = job.to_table()
-            df = df = astropy_table.to_pandas()
+    # Server 2 : gaia.ari
+    elif ALL_SERVER().check_ari_server() == 1:
+        url = "https://gaia.ari.uni-heidelberg.de/tap"
+        ari_tap = TapPlus(url=url)
 
-            # Rename column names to have a common format
-            df = df.rename(columns=column_mapping, errors = 'raise')
+        print("Connecting to Heidelberg server")
 
-            return df
+        job = ari_tap.launch_job_async(query)
+        stars = job.get_results()
+        df = stars.to_pandas()
 
-        # Server 4 : vizier 
-        elif ALL_SERVER().check_vizier_server() == 0:
-            query = """
-            SELECT TOP {max_source}
-                gs.Source,
-                gs.RA_ICRS,
-                gs.DE_ICRS,
-                gs.Plx,
-                gs.Gmag,
-                gs."BP-RP",
-                gs.Teff,
-                gs.logg,
-                gs."[Fe/H]",
-                gs.PM,
-                gs.RV,
-                ap."Lum-Flame",
-                ap."Rad-Flame",
-                ap."Mass-Flame"
-            FROM "I/355/gaiadr3" AS gs
-            JOIN "I/355/paramp" AS ap
-            ON gs.Source = ap.Source
-            WHERE 1 = CONTAINS(
-                POINT("ICRS", gs.RA_ICRS, gs.DE_ICRS),
-                CIRCLE("ICRS", {ra}, {dec}, {radius})
-            )
-            AND RPlx > 20
-            """
-            
-            url = "http://tapvizier.u-strasbg.fr/TAPVizieR/tap"
-            print(f"Connecting to {url}...")
-            
-            vizier_tap = TapPlus(url=url)
-            
-            print("Executing query...")
-            job = vizier_tap.launch_job(query)
-            results = job.get_results()
-
-            df = results.to_pandas()
-
-            # Rename column names to have a common format
-            df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
-
-            return  df
+        # Rename column names to have a common format
+        df = df.rename(columns=column_mapping, errors = 'raise')
         
-        # Edge case: No server response
-        else:
-            raise ConnectionError("No servers are responding. Kindly try again later!!")
+        return df
+    
+    # Server 3 : gaia.aip
+    elif ALL_SERVER().check_aip_server() == 1:
+        url = "https://gaia.aip.de/tap"
+        service = pyvo.dal.TAPService(url)
+
+        print("Connecting to Potsdam server")
+
+        job = service.search(query, response_format='votable')
+        astropy_table = job.to_table()
+        df = df = astropy_table.to_pandas()
+
+        # Rename column names to have a common format
+        df = df.rename(columns=column_mapping, errors = 'raise')
+
+        return df
+
+    # Server 4 : vizier 
+    elif ALL_SERVER().check_vizier_server() == 1:
+        query = """
+        SELECT TOP {max_source}
+            gs.Source,
+            gs.RA_ICRS,
+            gs.DE_ICRS,
+            gs.Plx,
+            gs.Gmag,
+            gs."BP-RP",
+            gs.Teff,
+            gs.logg,
+            gs."[Fe/H]",
+            gs.PM,
+            gs.RV,
+            ap."Lum-Flame",
+            ap."Rad-Flame",
+            ap."Mass-Flame"
+        FROM "I/355/gaiadr3" AS gs
+        JOIN "I/355/paramp" AS ap
+        ON gs.Source = ap.Source
+        WHERE 1 = CONTAINS(
+            POINT("ICRS", gs.RA_ICRS, gs.DE_ICRS),
+            CIRCLE("ICRS", {ra}, {dec}, {radius})
+        )
+        AND RPlx > 20
+        """
+        
+        url = "http://tapvizier.u-strasbg.fr/TAPVizieR/tap"
+        print(f"Connecting to {url}...")
+        
+        vizier_tap = TapPlus(url=url)
+        
+        print("Executing query...")
+        job = vizier_tap.launch_job(query)
+        results = job.get_results()
+
+        df = results.to_pandas()
+
+        # Rename column names to have a common format
+        df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
+
+        return  df
+    
+    # Edge case: No server response
+    else:
+        raise ConnectionError("No servers are responding. Kindly try again later!!")
