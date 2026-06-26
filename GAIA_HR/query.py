@@ -149,32 +149,100 @@ class ALL_SERVER:
         self.check_aip_server()
 
 
+# Dictionaries to map columns from different servers to rename with a common name.
 
-def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
+column_mapping = {'source_id':'sid', 
+                  'ra':'ra', 
+                  'dec':'dec', 
+                  'parallax':'parallax',
+                  'phot_g_mean_mag':'g_mean_mag', 
+                  'bp_rp':'bp_rp', 
+                  'teff_gspphot':'teff',
+                  'logg_gspphot':'logg', 
+                  'mh_gspphot': 'mh',
+                  'pm':'pm', 
+                  'radial_velocity':'rv', 
+                  'lum_flame':'lum_flame',
+                  'radius_flame':'radius_flame', 
+                  'mass_flame':'mass_flame',}
+
+column_mapping_Vizier = {'Source':'sid', 
+                         'RA_ICRS':'ra', 
+                         'DE_ICRS':'dec', 
+                         'Plx':'parallax',
+                         'Gmag':'g_mean_mag', 
+                         'BP-RP':'bp_rp', 
+                         'Teff':'teff',
+                         'logg':'logg', 
+                         '[Fe/H]': 'mh',
+                         'PM':'pm', 
+                         'RV':'rv', 
+                         'Lum-Flame':'lum_flame',
+                         'Rad-Flame':'radius_flame', 
+                         'Mass-Flame':'mass_flame',}
+
+def fetch_gaia_data(ra, dec, radius, d_max = None, d_min = None, max_source = 10000, server = None, save_file = False, filename="gaia_data.csv"):
     """Fetches a sample of star data from the Gaia DR3 dataset.
     
     Executes ADQL query to retrive sources with parallax_over_error > 20 from user specified region.
     Joins standard astrometric data with evaluated astrophysical parameters for available sources.
-    Function utilises a fallback mechanism, attempting to connect t multiple servers until successful
-    connectiona nd query are made.
+    Function utilises a fallback mechanism, attempting to connect to multiple servers until successful
+    connections and query are made.
 
     Args:
         ra (float): Right Ascension of region you want to query (in degrees)
         dec (float): Declination of region you want to query (in degrees)
         radius (float): Radius of region you want to query (in degrees)
         d_max (float, optional): 
-                            Default: -1, No input was given
+                            Default: None
                             Maximum distance to sources (in lightyears)
         d_min (float, optional):
-                            Default: 0
+                            Default: None
                             Minimum diatance to sources (in lightyears)
         max_sources (int, optional):
                             Default: 10000
                             Maximum number of sources to be queried
+        server (str, optional):
+                            Default: None, Autoselects server
+                            Name of server for querying. Available options : "gaia", "ari", "aip", "vizier"
+        save_file (bool, optional):
+                            Default: False
+                            Boolean to save fetched data as csv file
+        filename (str, optional):
+                            Default: "gaia_data.csv"
+                            Filename of saved csv file
+
     
     Returns:
         pandas.DataFrame: gaia star data
     """
+
+    # Check to verify the entered RA, DEC, radius falls within their defined range.
+    if (ra < 0) or (ra > 360):
+        raise ValueError("The specified value of RA do not exist in the celestial system bar the server issue.")
+    elif (dec < -90) or (dec > 90):
+        raise ValueError("The specified value of DEC do not exist in the celestial system bar the server issue.")
+    elif (radius < 0) or (radius > 180):
+        raise ValueError("The specified value of radius is not Queryable or the ADQL query is not accepting the assigned value.")
+    else:
+        pass
+
+    if (max_source < 0):
+        print("Invalid max_source input. Defaulting to 10000")
+        max_source = 10000
+    elif (max_source > 1000000):
+        raise ValueError("Bruh! What is wrong with you? Do you want to crash you pc?")
+
+
+    conditions = ["AND gs.parallax_over_error > 20"]
+
+    if d_max is not None:
+        min_parallax = 3261.56 / d_max
+        conditions.append(f"\n    AND gs.parallax >= {min_parallax}")
+    if d_min is not None:
+        max_parallax = 3261.56 / d_min
+        conditions.append(f"\n    AND gs.parallax <= {max_parallax}")
+
 
     # Query construction from user input
     query = f"""
@@ -197,15 +265,20 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
     JOIN gaiadr3.astrophysical_parameters AS ap
     ON gs.source_id = ap.source_id
     WHERE 1 = CONTAINS(
-        POINT("ICRS", gs.ra, gs.dec),
-        CIRCLE("ICRS", {ra}, {dec}, {radius})
-    )
-    AND parallax_over_error > 20
+    POINT('ICRS', gs.ra, gs.dec),
+    CIRCLE('ICRS', {ra}, {dec}, {radius})
+     )
     """
 
-    with HiddenPrints():
-        # Server 1 : esa.gaia
-        if ALL_SERVER().check_gaia_server() == 0:
+    
+
+    for condition in conditions:
+        query += condition
+
+
+    # Server 1 : esa.gaia
+    if server is None or server == "gaia":
+        if ALL_SERVER().check_gaia_server() == 1 :
 
             print("Connecting to main Gaia server")
 
@@ -213,10 +286,22 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             stars = job.get_results()
             df = stars.to_pandas()
             
-            return df
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
 
-        # Server 2 : gaia.ari
-        elif ALL_SERVER().check_ari_server() == 0:
+            if save_file:
+                df.to_csv(filename, index=False)
+
+            return df
+        
+        else:
+            raise ConnectionError("Gaia server is not responding. Kindly try again later or check another server!!")
+    
+
+    # Server 2 : gaia.ari
+    if server is None or server == "ari":
+        if ALL_SERVER().check_ari_server() == 1:
             url = "https://gaia.ari.uni-heidelberg.de/tap"
             ari_tap = TapPlus(url=url)
 
@@ -225,11 +310,24 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             job = ari_tap.launch_job_async(query)
             stars = job.get_results()
             df = stars.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
             
             return df
+
+        else:
+            raise ConnectionError("ARI Heidelberg server is not responding. Kindly try again later or check another server!!")
+
+
+    # Server 3 : gaia.aip
+    if server is None or server == "aip":
+        if ALL_SERVER().check_aip_server() == 1:
         
-        # Server 3 : gaia.aip
-        elif ALL_SERVER().check_aip_server() == 1:
             url = "https://gaia.aip.de/tap"
             service = pyvo.dal.TAPService(url)
 
@@ -237,13 +335,26 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
 
             job = service.search(query, response_format='votable')
             astropy_table = job.to_table()
-            df = astropy_table.to_pandas()
+            df = df = astropy_table.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
 
             return df
 
-        # Server 4 : vizier 
-        elif ALL_SERVER().check_vizier_server() == 0:
-            query = """
+        else:
+            raise ConnectionError("Potsdam AIP server is not responding. Kindly try again later or check another server!!")
+    
+
+    # Server 4 : vizier 
+    if server is None or server == "vizier":
+        if ALL_SERVER().check_vizier_server() == 1:
+        
+            query = f"""
             SELECT TOP {max_source}
                 gs.Source,
                 gs.RA_ICRS,
@@ -263,8 +374,8 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             JOIN "I/355/paramp" AS ap
             ON gs.Source = ap.Source
             WHERE 1 = CONTAINS(
-                POINT("ICRS", gs.RA_ICRS, gs.DE_ICRS),
-                CIRCLE("ICRS", {ra}, {dec}, {radius})
+                POINT('ICRS', gs.RA_ICRS, gs.DE_ICRS),
+                CIRCLE('ICRS', {ra}, {dec}, {radius})
             )
             AND RPlx > 20
             """
@@ -277,7 +388,22 @@ def fetch_gaia_data(ra, dec, radius, d_max = -1, d_min = 0, max_source = 10000):
             print("Executing query...")
             job = vizier_tap.launch_job(query)
             results = job.get_results()
-            
 
             df = results.to_pandas()
+
+            # Rename column names to have a common format
+            df = df.rename(columns=column_mapping_Vizier, errors = 'raise')
+            df["mag"] = df["g_mean_mag"] + 5 + 5 * np.log10(df["parallax"] / 1000)
+
+            if save_file:
+                df.to_csv(filename, index=False)
+
             return  df
+
+        else:
+            raise ConnectionError("TAPVizier server is not responding. Kindly try again later or check another server!!")
+
+
+    # Edge case: No server response
+    else:
+        raise ConnectionError("No servers are responding. Kindly try again later!!")
