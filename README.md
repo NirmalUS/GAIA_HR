@@ -11,13 +11,13 @@ This package queries data and plots Hertzsprung-Russell diagram for a user speci
 
 The package is installable on Python 3.x. To install the package, simply write
 
-`pip install Gaia_HR`
+`pip install Gaia-HR`
 
 Otherwise, clone this repo, and follow the below specified commands
 
 `cd Gaia_HR`
 
-`pip install -e .`
+`python -m pip install -e .`
 
 A list of dependencies is available in requirements.txt
 
